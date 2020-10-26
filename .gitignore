@@ -1,0 +1,12 @@
+#Add types of files which do not need to be shared here
+
+#VSCode
+.vscode/*
+
+#Debug/Log Files
+*.dSYM/
+*.log
+
+#Apple
+.DS_Store
+
