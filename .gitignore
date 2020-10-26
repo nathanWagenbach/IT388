@@ -10,3 +10,5 @@
 #Apple
 .DS_Store
 
+#Compiled
+*.o
