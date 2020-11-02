@@ -58,11 +58,11 @@ void printMatrix(int inputMatrix){
         for (int r = 0; r < rowNum + 2; r++){
             for (int c = 0; c < colNum + 2; c++){
                 if (matrix1[r][c] == 1){
-                    printf("█");
+                    printf("██");
                 } else if (matrix1[r][c] == -1){
-                    printf("█");
+                    printf("██");
                 } else {
-                    printf(" ");
+                    printf("  ");
                 }
             }
             printf("\n");
@@ -73,11 +73,11 @@ void printMatrix(int inputMatrix){
         for (int r = 0; r < rowNum + 2; r++){
             for (int c = 0; c < colNum + 2; c++){
                 if (matrix2[r][c] == 1){
-                    printf("█");
+                    printf("██");
                 } else if (matrix2[r][c] == -1){
-                    printf("█");
+                    printf("██");
                 } else {
-                    printf(" ");
+                    printf("  ");
                 }
             }
             printf("\n");
