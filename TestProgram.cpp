@@ -8,7 +8,7 @@
 using namespace std;
 
 //opening configuration section
-int rowNum = 10;
+int rowNum = 20;
 int colNum = 20;
 
 vector<vector<int8_t>> matrix1((rowNum + 2), vector<int8_t> ((colNum + 2), 0));
@@ -54,19 +54,31 @@ void printMatrix(int inputMatrix){
 
     if (inputMatrix == 1){
         // Print first matrix
-        printf("Matrix 1\n");
+        // printf("Matrix 1\n");
         for (int r = 0; r < rowNum + 2; r++){
             for (int c = 0; c < colNum + 2; c++){
-                printf("%02d ", matrix1[r][c]);
+                if (matrix1[r][c] == 1){
+                    printf("█");
+                } else if (matrix1[r][c] == -1){
+                    printf("█");
+                } else {
+                    printf(" ");
+                }
             }
             printf("\n");
         }
     } else if (inputMatrix == 2){
         // Print second matrix
-        printf("Matrix 2\n");
+        // printf("Matrix 2\n");
         for (int r = 0; r < rowNum + 2; r++){
             for (int c = 0; c < colNum + 2; c++){
-                printf("%02d ", matrix2[r][c]);
+                if (matrix2[r][c] == 1){
+                    printf("█");
+                } else if (matrix2[r][c] == -1){
+                    printf("█");
+                } else {
+                    printf(" ");
+                }
             }
             printf("\n");
         }
@@ -187,9 +199,11 @@ int main(){
 
     // Run for 20 generations (10 * 2)
     for (int i = 0; i < 10; i++){
+        printf("Generation %d\n", (i * 2));
         printMatrix(1);
         nextGeneration(1);
 
+        printf("Generation %d\n", (i * 2) + 1);
         printMatrix(2);
         nextGeneration(2);
     }
