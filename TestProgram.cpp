@@ -96,7 +96,7 @@ int livingNeighbors(int inputMatrix, int row, int col){
 
     if (inputMatrix == 1){
         if (matrix1[row - 1][col - 1] > 0){ // 0
-        numLiving++;
+            numLiving++;
         }
         if (matrix1[row - 1][col] > 0){     // 1
             numLiving++;
@@ -158,6 +158,7 @@ void nextGeneration(int inputMatrix){
                 int numLivingNeighbors = livingNeighbors(inputMatrix, r, c);
                 if (numLivingNeighbors == 2){
                     // Cell is unchanged
+                    matrix2[r][c] = matrix1[r][c];
                 } else if (numLivingNeighbors == 3){
                     // Cell is alive
                     matrix2[r][c] = 1;
@@ -173,6 +174,7 @@ void nextGeneration(int inputMatrix){
                 int numLivingNeighbors = livingNeighbors(inputMatrix, r, c);
                 if (numLivingNeighbors == 2){
                     // Cell is unchanged
+                    matrix1[r][c] = matrix2[r][c];
                 } else if (numLivingNeighbors == 3){
                     // Cell is alive
                     matrix1[r][c] = 1;
