@@ -264,6 +264,7 @@ void initFromFile(const char* inputFile){
 int main(int argc, char* argv[]){
 
     // Initialize rand with seed
+    //srand(time(0));
     srand(0);
     if (argc==2){
         initFromFile(argv[1]);
