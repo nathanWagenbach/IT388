@@ -5,7 +5,9 @@
 #include <sstream>
 #include <fstream>
 
-#include "gif.h"
+#include <vector>
+#include <cstdint>
+#include <gif.h>
 
 using namespace std;
 
@@ -57,11 +59,14 @@ uint8_t getCell(uint8_t *inputMatrix, int row, int col){
 void initializeMatrices(){
     matrix1 = new uint8_t [rowNum * colNum];
     matrix2 = new uint8_t [rowNum * colNum];
+}
 
+// Add walls to matrices and randomize matrix1
+void randomizeMatrix(uint8_t *inputMatrix){
     // Randomize the values of matrix 1
     for (int r = 0; r < rowNum; r++){
         for (int c = 0; c < colNum; c++){
-            setCell(matrix1, r, c, (rand() % 2));
+            setCell(inputMatrix, r, c, (rand() % 2));
         }
     }
 }
@@ -161,7 +166,7 @@ void nextGeneration(uint8_t *inputMatrix, uint8_t *outputMatrix){
 }
 
 // Read starting matrix from file
-void initFromFile(const char* inputFile){
+void initFromFile(const char* inputFile, uint8_t *inputMatrix){
     ifstream file(inputFile);
     string line;
     int r=0;
@@ -170,11 +175,11 @@ void initFromFile(const char* inputFile){
         for(auto i:line){
             if (i=='1')
             {
-                setCell(matrix1, r, c, 1);
+                setCell(inputMatrix, r, c, 1);
             }
             else
             {
-                setCell(matrix1, r, c, 0);
+                setCell(inputMatrix, r, c, 0);
             }
             c++;
             
@@ -190,19 +195,30 @@ int main(int argc, char* argv[]){
     //srand(time(0));
     srand(0);
 
+
+    if (argc < 3){
+        printf("Error! Not enough arguments\n");
+        return -1;
+    }
+
+    rowNum = atoi(argv[1]);
+    colNum = atoi(argv[2]);
+
+
     initializeMatrices();
 
-    printf("\n\nMatrix 1\n");
-    printMatrix(matrix1);
-    printf("\n\nMatrix 2\n");
-    printMatrix(matrix2);
+    // printf("\n\nMatrix 1\n");
+    // printMatrix(matrix1);
+    // printf("\n\nMatrix 2\n");
+    // printMatrix(matrix2);
 
-    // if (argc==2){
-    //     initFromFile(argv[1]);
-    // }
-    // else{
-    //     initializeMatrices();
-    // }
+
+    if (argc==4){
+        initFromFile(argv[3], matrix1);
+    }
+    else{
+        randomizeMatrix(matrix1);
+    }
 
     GifBegin(&g, fileName, colNum, rowNum, delay);
 
@@ -210,12 +226,12 @@ int main(int argc, char* argv[]){
     for (int i = 0; i < 10; i++){
         printf("Generation %d\n", (i * 2));
         printMatrix(matrix1);
-        createGif(matrix1);
+        // createGif(matrix1);
         nextGeneration(matrix1, matrix2);
 
         printf("Generation %d\n", (i * 2) + 1);
         printMatrix(matrix2);
-        createGif(matrix2);
+        // createGif(matrix2);
         nextGeneration(matrix2, matrix1);
     }
 
