@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <string>
 #include <sstream>
-#include <vector> 
 #include <fstream>
 
 #include "gif.h"
@@ -84,8 +83,7 @@ void printMatrix(uint8_t *inputMatrix){
 // Displays the matrices
 void createGif(uint8_t *inputMatrix){
     // Create a gif of just black pixels
-    vector<uint8_t> gifData(colNum * rowNum * 4, 0);
-    // uint8_t 
+    uint8_t *gifData = new uint8_t [rowNum * colNum * 4];
 
     for (int r = 0; r < rowNum; r++){
         for (int c = 0; c < colNum; c++){
@@ -95,11 +93,17 @@ void createGif(uint8_t *inputMatrix){
                 gifData[( ((r * colNum ) + c) * 4 ) + 1] = 255; // g
                 gifData[( ((r * colNum ) + c) * 4 ) + 2] = 255; // b
                 gifData[( ((r * colNum ) + c) * 4 ) + 3] = 255;
+            } else{
+                // Black
+                gifData[( ((r * colNum ) + c) * 4 ) + 0] = 0; // r
+                gifData[( ((r * colNum ) + c) * 4 ) + 1] = 0; // g
+                gifData[( ((r * colNum ) + c) * 4 ) + 2] = 0; // b
+                gifData[( ((r * colNum ) + c) * 4 ) + 3] = 0;
             }
         }
     }
 
-    GifWriteFrame(&g, gifData.data(), colNum, rowNum, delay);
+    GifWriteFrame(&g, gifData, colNum, rowNum, delay);
 }
 
 // Check if a cell at given (row, col) will be alive based on its neighbors 
