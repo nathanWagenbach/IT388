@@ -3,9 +3,9 @@
  * 
  * Benjamin Rhodes, Matthew Weiner, Nathan Wagenbach
  * 
- * Compile with: g++ TestProgram.cpp -o TestProgram.o -I ../IT388
+ * Compile with: g++ TestProgram.cpp -o TestProgram.o -I ../IT388 -fopenmp
  * 
- * Run with: ./TestProgram.o <rowNum> <colNum> <Input File (optional)>
+ * Run with: ./TestProgram.o <rowNum> <colNum> <numIterations> <Input File (optional)>
  */
 #include <iostream>
 #include <cstdlib>
@@ -21,23 +21,13 @@ using namespace std;
 
 //opening configuration section
 int rowNum = 20;
-int colNum = 68;
+int colNum = 20;
 
-vector<vector<int8_t>> matrix1((rowNum + 2), vector<int8_t> ((colNum + 2), 0));
-vector<vector<int8_t>> matrix2((rowNum + 2), vector<int8_t> ((colNum + 2), 0));
-
-int width = colNum;
-int height = rowNum;
-std::vector<uint8_t> black(width * height * 4, 0);
-std::vector<uint8_t> white(width * height * 4, 255);
+int numIterations = 0;
 
 auto fileName = "testOutput.gif";
 int delay = 100;
 GifWriter g;
-
-//variable to indicate which generation is currently running and therefore which order to use when calling stuff
-int inputMatrix = 1;
-int outputMatrix = 2; 
 
 // Check if a cell is inside of the matrix
 bool checkBounds(int row, int col){
@@ -99,6 +89,7 @@ void createGif(uint8_t *inputMatrix){
     // Create a gif of just black pixels
     uint8_t *gifData = new uint8_t [rowNum * colNum * 4];
 
+    // TODO - Parallize this?
     for (int r = 0; r < rowNum; r++){
         for (int c = 0; c < colNum; c++){
             if (getCell(inputMatrix, r, c) == 1){
@@ -158,6 +149,7 @@ int livingNeighbors(uint8_t *inputMatrix, int row, int col){
 
 //updates arrays, possibly area to parallelize? (consider overhead, how to parallelize to begin with and just use synchronization)
 void nextGeneration(uint8_t *inputMatrix, uint8_t *outputMatrix){
+    #pragma omp parallel for
     for (int r = 1; r < rowNum + 1; r++){
         for (int c = 1; c < colNum + 1; c++){
             int numLivingNeighbors = livingNeighbors(inputMatrix, r, c);
@@ -204,31 +196,33 @@ int main(int argc, char* argv[]){
     } else{
         rowNum = atoi(argv[1]);
         colNum = atoi(argv[2]);
+        numIterations = atoi(argv[3]);
     }
 
     uint8_t *testMatrix1 = new uint8_t [rowNum * colNum];
     uint8_t *testMatrix2 = new uint8_t [rowNum * colNum];
 
-    if (argc == 4){
-        cout << "Init from file!" << endl;
-        initFromFile(argv[3], testMatrix1);
+    if (argc == 5){
+        initFromFile(argv[4], testMatrix1);
     } else{
         randomizeMatrix(testMatrix1);
     }
 
-    GifBegin(&g, fileName, width, height, delay);
+    GifBegin(&g, fileName, colNum, rowNum, delay);
 
     // Run for 20 generations (10 * 2)
-    for (int i = 0; i < 10; i++){
-        printf("Generation %d\n", (i * 2));
-        printMatrix(testMatrix1);
-        createGif(testMatrix1);
-        nextGeneration(testMatrix1, testMatrix2);
-
-        printf("Generation %d\n", (i * 2) + 1);
-        printMatrix(testMatrix2);
-        createGif(testMatrix2);
-        nextGeneration(testMatrix2, testMatrix1);
+    uint8_t *inputMatrix = testMatrix1;
+    uint8_t *outputMatrix = testMatrix2;
+    for (int i = 0; i < numIterations; i++){
+        // printf("Generation %d\n", (i * 2));
+        // printMatrix(inputMatrix);
+        // createGif(inputMatrix);
+        nextGeneration(inputMatrix, outputMatrix);
+        
+        // Swap input and output matrices
+        uint8_t *temp = inputMatrix;
+        inputMatrix = outputMatrix;
+        outputMatrix = temp;
     }
 
     GifEnd(&g);
