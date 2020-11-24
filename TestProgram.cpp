@@ -87,9 +87,9 @@ void printMatrix(uint8_t *inputMatrix){
 // Displays the matrices
 void createGif(uint8_t *inputMatrix){
     // Create a gif of just black pixels
-    uint8_t *gifData = new uint8_t [rowNum * colNum * 4];
+    uint8_t *gifData = new uint8_t [rowNum * colNum * 4]();
 
-    // TODO - Parallize this?
+    #pragma omp parallel for
     for (int r = 0; r < rowNum; r++){
         for (int c = 0; c < colNum; c++){
             if (getCell(inputMatrix, r, c) == 1){
@@ -98,12 +98,6 @@ void createGif(uint8_t *inputMatrix){
                 gifData[( ((r * colNum ) + c) * 4 ) + 1] = 255; // g
                 gifData[( ((r * colNum ) + c) * 4 ) + 2] = 255; // b
                 gifData[( ((r * colNum ) + c) * 4 ) + 3] = 255;
-            } else{
-                // Black
-                gifData[( ((r * colNum ) + c) * 4 ) + 0] = 0; // r
-                gifData[( ((r * colNum ) + c) * 4 ) + 1] = 0; // g
-                gifData[( ((r * colNum ) + c) * 4 ) + 2] = 0; // b
-                gifData[( ((r * colNum ) + c) * 4 ) + 3] = 0;
             }
         }
     }
