@@ -5,7 +5,8 @@
 #include <sstream>
 #include <vector> 
 #include <fstream>
-#include <gif.h>
+
+#include "gif.h"
 
 using namespace std;
 
@@ -55,8 +56,8 @@ uint8_t getCell(uint8_t *inputMatrix, int row, int col){
 
 // Add walls to matrices and randomize matrix1
 void initializeMatrices(){
-    matrix1 = (uint8_t *)calloc(rowNum * colNum, 1);
-    matrix2 = (uint8_t *)calloc(rowNum * colNum, 1);
+    matrix1 = new uint8_t [rowNum * colNum];
+    matrix2 = new uint8_t [rowNum * colNum];
 
     // Randomize the values of matrix 1
     for (int r = 0; r < rowNum; r++){
@@ -80,41 +81,26 @@ void printMatrix(uint8_t *inputMatrix){
     }
 }
 
-// //displays the matrices
-// void createGif(int inputMatrix){
-//     // Basic matrix print
+// Displays the matrices
+void createGif(uint8_t *inputMatrix){
+    // Create a gif of just black pixels
+    vector<uint8_t> gifData(colNum * rowNum * 4, 0);
+    // uint8_t 
 
-//    vector<uint8_t> gifData(width * height * 4, 0);
+    for (int r = 0; r < rowNum; r++){
+        for (int c = 0; c < colNum; c++){
+            if (getCell(inputMatrix, r, c) == 1){
+                // White
+                gifData[( ((r * colNum ) + c) * 4 ) + 0] = 255; // r
+                gifData[( ((r * colNum ) + c) * 4 ) + 1] = 255; // g
+                gifData[( ((r * colNum ) + c) * 4 ) + 2] = 255; // b
+                gifData[( ((r * colNum ) + c) * 4 ) + 3] = 255;
+            }
+        }
+    }
 
-
-//     if (inputMatrix == 1){
-//         for (int r = 1; r < rowNum + 1; r++){
-//             for (int c = 1; c < colNum + 1; c++){
-//                 if (matrix1[r][c] == 1){
-//                     // White
-//                     gifData[( (( (r - 1) * width ) + (c - 1)) * 4 ) + 0] = 255; //r
-//                     gifData[( (( (r - 1) * width ) + (c - 1)) * 4 ) + 1] = 255; //g
-//                     gifData[( (( (r - 1) * width ) + (c - 1)) * 4 ) + 2] = 255; //b
-//                     gifData[( (( (r - 1) * width ) + (c - 1)) * 4 ) + 3] = 255; 
-//                 }
-//             }
-//         }
-//     } else if (inputMatrix == 2){
-//         for (int r = 1; r < rowNum + 1; r++){
-//             for (int c = 1; c < colNum + 1; c++){
-//                 if (matrix2[r][c] == 1){
-//                     // White
-//                     gifData[( (( (r - 1) * width ) + (c - 1)) * 4 ) + 0] = 255; //r
-//                     gifData[( (( (r - 1) * width ) + (c - 1)) * 4 ) + 1] = 255; //g
-//                     gifData[( (( (r - 1) * width ) + (c - 1)) * 4 ) + 2] = 255; //b
-//                     gifData[( (( (r - 1) * width ) + (c - 1)) * 4 ) + 3] = 255; 
-//                 }
-//             }
-//         }
-//     }
-
-//     GifWriteFrame(&g, gifData.data(), width, height, delay);
-// }
+    GifWriteFrame(&g, gifData.data(), colNum, rowNum, delay);
+}
 
 // Check if a cell at given (row, col) will be alive based on its neighbors 
 int livingNeighbors(uint8_t *inputMatrix, int row, int col){
@@ -215,6 +201,7 @@ int main(int argc, char* argv[]){
     printMatrix(matrix1);
     printf("\n\nMatrix 2\n");
     printMatrix(matrix2);
+
     // if (argc==2){
     //     initFromFile(argv[1]);
     // }
@@ -222,22 +209,22 @@ int main(int argc, char* argv[]){
     //     initializeMatrices();
     // }
 
-    // GifBegin(&g, fileName, width, height, delay);
+    GifBegin(&g, fileName, colNum, rowNum, delay);
 
     // Run for 20 generations (10 * 2)
     for (int i = 0; i < 10; i++){
         printf("Generation %d\n", (i * 2));
         printMatrix(matrix1);
-        // createGif(1);
+        createGif(matrix1);
         nextGeneration(matrix1, matrix2);
 
         printf("Generation %d\n", (i * 2) + 1);
         printMatrix(matrix2);
-        // createGif(2);
+        createGif(matrix2);
         nextGeneration(matrix2, matrix1);
     }
 
-    // GifEnd(&g);
+    GifEnd(&g);
 
 
     return 0;
