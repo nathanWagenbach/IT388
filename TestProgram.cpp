@@ -160,37 +160,28 @@ void nextGeneration(uint8_t *inputMatrix, uint8_t *outputMatrix){
     }
 }
 
-// void initFromFile(const char* inputFile){
-//     ifstream file(inputFile);
-//     string line;
-//     int r=1;
-//     fill(matrix1[0].begin(), matrix1[0].end(), -1);
-//     fill(matrix2[0].begin(), matrix2[0].end(), -1);
-//     while(getline(file,line)){
-//         int c=1;
-//         matrix1[r][0]=-1;
-//         matrix2[r][0]=-1;
-//         for(auto i:line){
-//             if (i=='1')
-//             {
-//                 matrix1[r][c]=1;
-//                 matrix2[r][c]=1;
-//             }
-//             else
-//             {
-//                 matrix1[r][c]=0;
-//                 matrix2[r][c]=0;
-//             }
-//             c++;
+// Read starting matrix from file
+void initFromFile(const char* inputFile){
+    ifstream file(inputFile);
+    string line;
+    int r=0;
+    while(getline(file,line)){
+        int c=0;
+        for(auto i:line){
+            if (i=='1')
+            {
+                setCell(matrix1, r, c, 1);
+            }
+            else
+            {
+                setCell(matrix1, r, c, 0);
+            }
+            c++;
             
-//         }
-//         matrix1[r][c]=-1;
-//         matrix2[r][c]=-1;
-//         r++;
-//     }
-//     fill(matrix1[rowNum + 1].begin(), matrix1[rowNum + 1].end(), -1);
-//     fill(matrix2[rowNum + 1].begin(), matrix2[rowNum + 1].end(), -1);
-// }
+        }
+        r++;
+    }
+}
 
 
 int main(int argc, char* argv[]){
