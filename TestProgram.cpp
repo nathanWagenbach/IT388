@@ -5,7 +5,7 @@
  * 
  * Compile with: g++ TestProgram.cpp -o TestProgram.o -I ../IT388 -fopenmp
  * 
- * Run with: ./TestProgram.o <rowNum> <colNum> <numIterations> <Input File (optional)>
+ * Run with: ./TestProgram.o <rowNum> <colNum> <numGenerations> <enable output> <Input File (optional)>
  */
 #include <iostream>
 #include <cstdlib>
@@ -16,6 +16,7 @@
 #include <fstream>
 #include <new>
 #include <gif.h>
+#include "omp.h"
 
 using namespace std;
 
@@ -23,7 +24,8 @@ using namespace std;
 int rowNum = 20;
 int colNum = 20;
 
-int numIterations = 0;
+int numGenerations = 0;
+bool enable_output = false;
 
 auto fileName = "testOutput.gif";
 int delay = 100;
@@ -184,33 +186,44 @@ int main(int argc, char* argv[]){
     //srand(time(0));
     srand(0);
 
-    if (argc  < 3){
+    if (argc  < 5){
         cout << "Not enough arguments"<< endl;
         return -1;
     } else{
         rowNum = atoi(argv[1]);
         colNum = atoi(argv[2]);
-        numIterations = atoi(argv[3]);
+        numGenerations = atoi(argv[3]);
+        enable_output = atoi(argv[4]);
     }
 
-    uint8_t *testMatrix1 = new uint8_t [rowNum * colNum];
-    uint8_t *testMatrix2 = new uint8_t [rowNum * colNum];
+    uint8_t *matrix1 = new uint8_t [rowNum * colNum];
+    uint8_t *matrix2 = new uint8_t [rowNum * colNum];
 
-    if (argc == 5){
-        initFromFile(argv[4], testMatrix1);
+    if (argc == 6){
+        initFromFile(argv[5], matrix1);
     } else{
-        randomizeMatrix(testMatrix1);
+        randomizeMatrix(matrix1);
     }
 
     GifBegin(&g, fileName, colNum, rowNum, delay);
 
-    // Run for 20 generations (10 * 2)
-    uint8_t *inputMatrix = testMatrix1;
-    uint8_t *outputMatrix = testMatrix2;
-    for (int i = 0; i < numIterations; i++){
-        // printf("Generation %d\n", (i * 2));
-        // printMatrix(inputMatrix);
-        // createGif(inputMatrix);
+    if (!enable_output){
+        // If output is disabled save the first and last frames only
+        createGif(matrix1);
+    }
+
+    uint8_t *inputMatrix = matrix1;
+    uint8_t *outputMatrix = matrix2;
+
+    int numThreads = omp_get_num_threads();
+    double startTime = omp_get_wtime();
+    // Run for <numIterations> generations
+    for (int i = 0; i < numGenerations; i++){
+        if (enable_output){
+            // printf("Generation %d\n", i);
+            // printMatrix(inputMatrix);
+            createGif(inputMatrix);
+        }
         nextGeneration(inputMatrix, outputMatrix);
         
         // Swap input and output matrices
@@ -219,11 +232,22 @@ int main(int argc, char* argv[]){
         outputMatrix = temp;
     }
 
+    double elapsedTime = omp_get_wtime() - startTime;
+
+    if (!enable_output){
+        // If output is disabled save the first and last frames only
+        createGif(inputMatrix);
+    }
+
+
     GifEnd(&g);
 
+    // Print results
+    printf("Grid Size: %dx%d\nGenerations: %d\nThreads: %d\nElapsed: %f\n", rowNum, colNum, numGenerations, numThreads, elapsedTime);
 
-    delete[] testMatrix1;
-    delete[] testMatrix2;
+
+    delete[] matrix1;
+    delete[] matrix2;
 
 
     return 0;
