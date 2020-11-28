@@ -28,7 +28,7 @@ int numGenerations = 0;
 bool enable_output = false;
 
 auto fileName = "testOutput.gif";
-int delay = 100;
+int delay = 50;
 GifWriter g;
 
 // Check if a cell is inside of the matrix
@@ -44,6 +44,7 @@ bool checkBounds(int row, int col){
     }
     return true;
 }
+
 
 // Set the value of a cell
 void setCell(uint8_t *inputMatrix, int row, int col, uint8_t val){
@@ -215,7 +216,7 @@ int main(int argc, char* argv[]){
     uint8_t *inputMatrix = matrix1;
     uint8_t *outputMatrix = matrix2;
 
-    int numThreads = omp_get_num_threads();
+    int numThreads = omp_get_max_threads();
     double startTime = omp_get_wtime();
     // Run for <numIterations> generations
     for (int i = 0; i < numGenerations; i++){
