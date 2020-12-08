@@ -1,3 +1,5 @@
+//Converter for Life 1.05 files to our file format. Ignores # lines and only works if all lines are the same length.
+//Intended to allow for use of the designs in Stephan A Silver's Life Lexicon https://conwaylife.com/ref/lexicon/lex_home.htm
 #include <iostream>
 #include <fstream>
 #include <string>
