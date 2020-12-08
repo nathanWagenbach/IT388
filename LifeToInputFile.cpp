@@ -11,14 +11,9 @@ int main(int argc, char* argv[]){
         std::cout<<"Usage:"<<argv[0]<<" [inputfile] [outputfile]\n";
         return 0;
     }
-    std::ifstream file(argv[1]);
-    std::vector<std::string> lines;
+    std::ifstream file(argv[1]);//Read the input file
+    std::ofstream outFile(argv[2]);//Create the output file
     std::string line;
-    if(!file.good()){//This is only here for the error message, the while loop will evaluate while(0) if the file can't be read.
-        std::cerr<<argv[1]<<" could not be read or does not exist."<<std::endl;
-        return 0;
-    }
-    
     while(getline(file,line)){
         if (line.empty() || line[0]=='#') continue;
         std::stringstream encoded;
@@ -32,10 +27,6 @@ int main(int argc, char* argv[]){
                 encoded<<0;
             }
         }
-        lines.push_back(encoded.str());
-    }
-    std::ofstream outFile(argv[2]);
-    for(auto i:lines){
-        outFile<<i<<'\n';
+        outFile<<encoded.str()<<'\n';
     }
 }
